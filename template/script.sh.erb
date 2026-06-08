@@ -23,9 +23,8 @@ mkdir -p "$CODE_SERVER_DATAROOT/extensions"
 export PASSWORD="$password"
 
 # Print compute node.
-echo "$(date): Running on compute node ${compute_node}:$port"
+echo "$(date): Running on compute node $(hostname):$port"
 
-# VSCode complains that system git is too old.
 module load code-server/<%= code_server_version %>
 module li
 

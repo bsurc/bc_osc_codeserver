@@ -39,11 +39,11 @@ if [[ -f "$CPP_FILE" ]]; then
     [ -s "$CPP_FILE" ] || echo '{"configurations": [{ "name": "Linux", "browse": { "databaseFilename": null }}], "version": 4}' > "$CPP_FILE"
 
     jq --arg dbfile "$CPP_DIR/cpp-vscode.db" \
-      '.configurations[0].browse.databaseFilename = $dbfile' \
-      "$CPP_FILE" > "$CPP_FILE".new
+        '.configurations[0].browse.databaseFilename = $dbfile' \
+        "$CPP_FILE" > "$CPP_FILE".new
 
     mv "$CPP_FILE".new "$CPP_FILE"
-  fi
+fi
 
 #
 # Start Code Server.
@@ -52,7 +52,7 @@ if [[ -f "$CPP_FILE" ]]; then
 <%- if gpu -%>
     echo "$(date): Starting code-server with nv bind"
     echo ""
-    apptainer exec --nv ${container} \
+    apptainer exec --nv ${CONTAINER} \
         code-server \
         --auth=none \
         --bind-addr="0.0.0.0:${port}" \

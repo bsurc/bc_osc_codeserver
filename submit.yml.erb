@@ -1,32 +1,11 @@
 <%-
   nodes = bc_num_slots.blank? ? 1 : bc_num_slots.to_i
 
-  case custom_queue
-  when "ondemand-p100"
-    slurm_args = [
-      "--nodes", "#{nodes}",
-      "-c", "#{num_cores}",
-      "--partition", "ondemand-p100"
-    ]
-  when "classroomgpu"
-    slurm_args = [
-      "--nodes", "#{nodes}",
-      "-c", "#{num_cores}",
-      "--partition", "classroomgpu"
-    ]
-  when "cryogars"
-    slurm_args = [
-      "--nodes", "#{nodes}",
-      "-c", "#{num_cores}",
-      "--partition", "cryogars"
-    ]
-  else
-    slurm_args = [
-      "--nodes", "#{nodes}",
-      "-c", "#{num_cores}",
-      "--partition", "ondemand"
-    ]
-  end
+  slurm_args = [
+    "--nodes", "#{nodes}",
+    "-c", "#{num_cores}",
+    "--partition", "#{custom_queue}"
+  ]
   if enable_gpu == "1"
     slurm_args += ["--gpus-per-node", "1"]
   end

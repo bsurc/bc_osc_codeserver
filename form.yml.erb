@@ -1,41 +1,44 @@
 <%-
 require 'open3'
 begin
-    oodqueues = ['classroomgpu', 'cryogars', 'ondemand', 'ondemand-p100']
-    maxcores = [14, 32, 4, 14]
-    hasgpu = [true, true, false, true]
-    # Command to Run
-    script = '/cm/shared/apps/slurm/current/bin/sinfo -h --format="%P"'
-    # Create a partitions array to dynamically populate the queues associated
-    # with the user
-    partitions = []
-    pmaxcores = []
-    phasgpu = []
-    # Store the output, error, status
-    output, status = Open3.capture2('bash', stdin_data: script)
-    # puts status
-    if status.success?
-        # Add it to the custom_envs array by splitting the output at '\n'.
-        output.split("\n").each do |queue|
-            if oodqueues.include?(queue)
-                qindex = oodqueues.index(queue)
-                queue = queue.gsub("*", "")
-                partitions.push(queue)
-                pmaxcores.push(maxcores[qindex])
-                phasgpu.push(hasgpu[qindex])
-            end
-        end
-        puts partitions
-        puts pmaxcores
-        puts phasgpu
-    else
-        partition_error = "Error"
+  oodqueues = [
+    'classroomgpu', 'cryogars', 'ondemand', 'ondemand-l40', 'ondemand-p100'
+  ]
+  maxcores = [14, 32, 4, 16, 14]
+  hasgpu = [true, true, false, true, true]
+  # Command to Run
+  script = '/cm/shared/apps/slurm/current/bin/sinfo -h --format="%P"'
+  # Create a partitions array to dynamically populate the queues associated
+  # with the user
+  partitions = []
+  pmaxcores = []
+  phasgpu = []
+  # Store the output, error, status
+  output, status = Open3.capture2('bash', stdin_data: script)
+  # puts status
+  if status.success?
+    # Add it to the custom_envs array by splitting the output at '\n'.
+    output.split("\n").each do |queue|
+      if oodqueues.include?(queue)
+        qindex = oodqueues.index(queue)
+        queue = queue.gsub("*", "")
+        partitions.push(queue)
+        pmaxcores.push(maxcores[qindex])
+        phasgpu.push(hasgpu[qindex])
+      end
     end
-rescue => e
-    partition_error = e.message.strip
+    puts partitions
+    puts pmaxcores
+    puts phasgpu
+  else
+    partition_error = "Error"
+  end
+  rescue => e
+  partition_error = e.message.strip
 end
 -%>
 ---
+
 cluster: "borah"
 form:
   - custom_queue
@@ -83,6 +86,11 @@ attributes:
       - **ondemand** <br>
         Standard Borah nodes have 48 cores and 186 GB of memory.
         By selecting the "ondemand" partition, you will be given up to 4 cores.
+      - **ondemand-l40** <br>
+        These nodes have 4 [NVIDIA L40 GPUs], 64 cores, and 512 GB of memory.
+        By selecting the "ondemand-l40" partition, you will be given up to 16
+        cores and 1 GPU.
+        [NVIDIA L40 GPUs]: https://www.nvidia.com/en-us/data-center/l40/
       - **ondemand-p100** <br>
         These are HPC nodes with 2 [NVIDIA Tesla P100 GPUs], 28 cores, and
         251 GB of memory.
